@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+  <style>
+    .grey-box {
+      background-color: #E0F7FA; 
+      padding: 20px; 
+      border-radius: 8px; 
+    }
+    .banner-image {
+       max-width: 100%;
+       height: auto;
+       object-fit: cover;
+    }
+    .img-container {
+      text-align: center;
+      padding: 10px;
+    }
+    .fixed-img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-app-bar app color="#4682B4" elevate-on-scroll>
+        <v-container class="d-flex align-center">
+          <v-btn color="white" icon>
+            <v-icon>mdi-home</v-icon>
+          </v-btn>
+          <v-toolbar-items class="ml-4">
+            <v-menu offset-y v-for="(item, index) in menuItems" :key="index">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn text color="white" v-bind="attrs" v-on="on">{{ item }}
+                  <v-icon right>mdi-menu-down</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item v-for="(option, index) in menuOptions" :key="index" @click="selectOption(option)">
+                  <v-list-item-title>{{ option }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-toolbar-items>
+        </v-container>
+      </v-app-bar>
+
+      <v-main>
+        <v-container fluid>
+          <v-form ref="form" @submit.prevent="submit" :disabled="loading">
+            <v-card :loading="loading" outlined>
+              <v-img src="https://i.postimg.cc/nVSchcV4/Banner-4.png" height="auto" max-width="100%" cover class="benner">
+                <v-card-title>{{ title }}</v-card-title>
+                <v-card-subtitle v-if="subtitle">{{ subtitle }}</v-card-subtitle>
+              </v-img>
+              <v-card-text>
+                <v-container fluid>
+                  <v-row>
+                    <v-col cols="12" md="6" class="img-container">
+                      <v-img src="https://i.postimg.cc/V6WL2ty2/1.png"
+                        class="fixed-img"
+                        alt="กฎระเบียบด้านความปลอดภัยและสิ่งแวดล้อมสำหรับผู้มาติดต่อและผู้รับเหมา"></v-img>
+                    </v-col>
+                    <v-col cols="12" md="6" class="img-container">
+                      <v-img src="https://i.postimg.cc/mg2kzwgz/Screenshot-2025-05-19-085454.png"
+                        class="fixed-img"
+                        alt="แยกขยะก่อนทิ้ง ดีต่อใจ ดีต่อโลก"></v-img>
+                    </v-col>
+                  </v-row>
+
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.name"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.email"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.phone"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.gender"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.city"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.date"></my-input>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <my-input :item="form.signature"></my-input>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-btn type="submit" color="primary" :disabled="loading" large depressed>Submit</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>  
+            </v-card>
+          </v-form>
+          <v-snackbar v-model="snackbar.show" :color="snackbar.color" bottom>
+            {{ snackbar.message }}
+            <template v-slot:action="{ attrs }">
+              <v-btn color="white" text v-bind="attrs" :timeout="snackbar.timeout" @click="snackbar.show = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+          </v-snackbar>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  
+  <?!= link("vuejs.html"); ?>
+</body>
+
+</html>
