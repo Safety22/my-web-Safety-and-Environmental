@@ -1,0 +1,66 @@
+const SETTINGS = {
+  APP_NAME: "กฎระเบียบด้านความปลอดภัยและสิ่งแวดล้อม",
+  SHEET_NAME: {
+    RESPONSES: "Responses"
+  },
+  HEADERS: [
+    { key: "timestamp", value: "Timestamp" },
+    { key: "Time", value: "Time" },
+    { key: "name", value: "Name" },
+    { key: "Car registration", value: "Car registration" },
+    { key: "phone", value: "Phone" },
+    { key: "gender", value: "Gender" },
+    { key: "contact about", value: "Contact about" },
+    { key: "date", value: "Date" },
+    { key: "signature", value: "Signature" }
+  ]
+};
+
+function link(filename) {
+  return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
+}
+
+function doGet() {
+  return HtmlService.createTemplateFromFile("index.html")
+    .evaluate()
+    .setTitle(SETTINGS.APP_NAME)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function submit(params) {
+  const data = JSON.parse(params);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Responses");
+  if (!sheet) sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Responses");
+
+  const now = new Date();
+  const rowData = [
+    Utilities.formatDate(now, "Asia/Bangkok", "dd/MM/yyyy"), // Timestamp
+    Utilities.formatDate(now, "Asia/Bangkok", "HH:mm:ss"),    // Time
+    data.name || "",
+    data.email || "",
+    data.phone || "",
+    data.gender || "",
+    data.city || "",
+    data.date || "",
+    "" // Placeholder for signature image
+  ];
+
+  // เพิ่มข้อมูลลงใน Spreadsheet
+  sheet.appendRow(rowData);
+  const lastRow = sheet.getLastRow();
+
+  // 🔹 แปลงลายเซ็นจาก Base64 เป็นรูปภาพและแทรกลงใน Google Sheets
+  if (data.signature && data.signature.startsWith("data:image")) {
+    try {
+      const base64Data = data.signature.split(",")[1]; // ตัด data:image/png;base64, ออก
+      const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", "signature.png");
+      
+      // 🔹 แทรกรูปภาพลงในเซลล์ Signature
+      sheet.insertImage(blob, sheet.getRange(`I${lastRow}`).getColumn(), lastRow);
+    } catch (error) {
+      Logger.log("Error inserting signature image: " + error.message);
+    }
+  }
+
+  return JSON.stringify({ message: "บันทึกเรียบร้อยแล้ว!" });
+}
